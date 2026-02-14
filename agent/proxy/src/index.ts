@@ -56,15 +56,18 @@ app.post('/v1/messages', async (req, res) => {
       try {
         const generator = callBedrockStream(request);
         
-        for await (const event of generator) {
+        // Manual iteration to capture the return value (usage record)
+        let result = await generator.next();
+        while (!result.done) {
+          const event = result.value;
           res.write(`event: ${event.type}\n`);
           res.write(`data: ${JSON.stringify(event)}\n\n`);
+          result = await generator.next();
         }
 
-        // Get usage from generator return value
-        const usage = await generator.next().then(r => r.value);
-        if (usage) {
-          credits.accumulateUsage(usage);
+        // result.value is now the UsageRecord from the generator's return
+        if (result.value) {
+          credits.accumulateUsage(result.value);
         }
 
         res.write('event: message_stop\n');
