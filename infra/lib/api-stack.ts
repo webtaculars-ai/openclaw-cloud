@@ -85,7 +85,7 @@ export class ApiStack extends cdk.Stack {
     // Lambda functions
     const provisionAgentFn = new lambda.Function(this, 'ProvisionAgentFn', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'provision-agent.handler',
+      handler: 'handlers/provision-agent.handler',
       code: lambda.Code.fromAsset('../backend/dist'),
       role: lambdaRole,
       environment: sharedEnv,
@@ -95,7 +95,7 @@ export class ApiStack extends cdk.Stack {
 
     const getAgentFn = new lambda.Function(this, 'GetAgentFn', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'get-agent.handler',
+      handler: 'handlers/get-agent.handler',
       code: lambda.Code.fromAsset('../backend/dist'),
       role: lambdaRole,
       environment: sharedEnv,
@@ -105,7 +105,7 @@ export class ApiStack extends cdk.Stack {
 
     const startAgentFn = new lambda.Function(this, 'StartAgentFn', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'start-agent.handler',
+      handler: 'handlers/start-agent.handler',
       code: lambda.Code.fromAsset('../backend/dist'),
       role: lambdaRole,
       environment: sharedEnv,
@@ -115,7 +115,7 @@ export class ApiStack extends cdk.Stack {
 
     const stopAgentFn = new lambda.Function(this, 'StopAgentFn', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'stop-agent.handler',
+      handler: 'handlers/stop-agent.handler',
       code: lambda.Code.fromAsset('../backend/dist'),
       role: lambdaRole,
       environment: sharedEnv,
@@ -125,7 +125,7 @@ export class ApiStack extends cdk.Stack {
 
     const updateChannelsFn = new lambda.Function(this, 'UpdateChannelsFn', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'update-channels.handler',
+      handler: 'handlers/update-channels.handler',
       code: lambda.Code.fromAsset('../backend/dist'),
       role: lambdaRole,
       environment: sharedEnv,
@@ -135,7 +135,7 @@ export class ApiStack extends cdk.Stack {
 
     const getCreditsFn = new lambda.Function(this, 'GetCreditsFn', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'get-credits.handler',
+      handler: 'handlers/get-credits.handler',
       code: lambda.Code.fromAsset('../backend/dist'),
       role: lambdaRole,
       environment: sharedEnv,
@@ -145,7 +145,7 @@ export class ApiStack extends cdk.Stack {
 
     const rechargeCreditsFn = new lambda.Function(this, 'RechargeCreditsFn', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'recharge-credits.handler',
+      handler: 'handlers/recharge-credits.handler',
       code: lambda.Code.fromAsset('../backend/dist'),
       role: lambdaRole,
       environment: sharedEnv,
@@ -155,7 +155,7 @@ export class ApiStack extends cdk.Stack {
 
     const lemonSqueezyWebhookFn = new lambda.Function(this, 'LemonSqueezyWebhookFn', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'lemonsqueezy-webhook.handler',
+      handler: 'handlers/lemonsqueezy-webhook.handler',
       code: lambda.Code.fromAsset('../backend/dist'),
       role: lambdaRole,
       environment: sharedEnv,
