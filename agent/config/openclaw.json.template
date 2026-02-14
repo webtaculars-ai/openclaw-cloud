@@ -1,0 +1,13 @@
+{
+  "agent": {
+    "name": "OpenClaw Cloud Agent",
+    "model": "${MODEL}",
+    "anthropicBaseUrl": "http://localhost:8080/v1"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}"
+    }
+  }
+}

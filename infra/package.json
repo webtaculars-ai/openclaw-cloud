@@ -1,0 +1,19 @@
+{
+  "name": "openclaw-cloud-infra",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy --all",
+    "clean": "rm -rf cdk.out"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.100.0",
+    "constructs": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.0.0"
+  }
+}
