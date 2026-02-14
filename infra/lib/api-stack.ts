@@ -184,12 +184,22 @@ export class ApiStack extends cdk.Stack {
 
     // Routes
     const agents = this.api.root.addResource('agents');
+    
+    // POST /agents - provision new agent
     agents.addMethod('POST', new apigateway.LambdaIntegration(provisionAgentFn), {
       authorizer,
       authorizationType: apigateway.AuthorizationType.COGNITO,
     });
 
+    // GET /agents - list all agents for user
+    agents.addMethod('GET', new apigateway.LambdaIntegration(getAgentFn), {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
+
     const agentById = agents.addResource('{agentId}');
+    
+    // GET /agents/{agentId} - get specific agent
     agentById.addMethod('GET', new apigateway.LambdaIntegration(getAgentFn), {
       authorizer,
       authorizationType: apigateway.AuthorizationType.COGNITO,
