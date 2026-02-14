@@ -1,5 +1,5 @@
 # Stage 1: Build proxy
-FROM node:20-slim AS proxy-builder
+FROM node:22-slim AS proxy-builder
 
 WORKDIR /build
 
@@ -15,12 +15,15 @@ RUN npm run build
 RUN npm prune --production
 
 # Stage 2: Runtime
-FROM node:20-slim
+FROM node:22-slim
 
 # Install curl (for health checks) and gettext-base (for envsubst)
 RUN apt-get update && \
     apt-get install -y curl gettext-base && \
     rm -rf /var/lib/apt/lists/*
+
+# Install OpenClaw from npm (requires Node >= 22)
+RUN npm install -g openclaw@latest
 
 WORKDIR /app
 
@@ -35,15 +38,13 @@ COPY config/openclaw.json.template ./config/
 COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
-# Placeholder for OpenClaw binary
-# In real deployment, this would be replaced by CI:
-# RUN wget -O /usr/local/bin/openclaw https://releases.openclaw.ai/latest/openclaw-linux-x64 && chmod +x /usr/local/bin/openclaw
-RUN echo '#!/bin/bash\necho "OpenClaw binary placeholder - replace in CI"\nsleep infinity' > /usr/local/bin/openclaw && chmod +x /usr/local/bin/openclaw
+# OpenClaw home directory for config and session data
+RUN mkdir -p /home/node/.openclaw && chown -R node:node /home/node
 
-# Health check
+# Health check against the metering proxy
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD curl -sf http://localhost:8080/health || exit 1
 
-EXPOSE 8080
+EXPOSE 8080 18789
 
 ENTRYPOINT ["./entrypoint.sh"]

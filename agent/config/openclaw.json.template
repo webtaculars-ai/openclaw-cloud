@@ -1,13 +1,59 @@
 {
-  "agent": {
-    "name": "OpenClaw Cloud Agent",
-    "model": "${MODEL}",
-    "anthropicBaseUrl": "http://localhost:8080/v1"
+  "gateway": {
+    "mode": "local",
+    "port": 18789,
+    "auth": {
+      "token": "${GATEWAY_TOKEN}"
+    },
+    "controlUi": {
+      "dangerouslyDisableDeviceAuth": true
+    }
   },
+
+  "models": {
+    "mode": "replace",
+    "providers": {
+      "metering-proxy": {
+        "baseUrl": "http://localhost:8080",
+        "apiKey": "internal",
+        "api": "anthropic-messages",
+        "models": [
+          {
+            "id": "${MODEL}",
+            "name": "Claude (Metered)",
+            "reasoning": false,
+            "input": ["text", "image"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "metering-proxy/${MODEL}"
+      },
+      "workspace": "/home/node/.openclaw/workspace"
+    }
+  },
+
   "channels": {
     "telegram": {
       "enabled": true,
-      "botToken": "${TELEGRAM_BOT_TOKEN}"
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "open",
+      "allowFrom": ["*"],
+      "groups": {
+        "*": { "requireMention": true }
+      }
     }
+  },
+
+  "session": {
+    "dmScope": "per-channel-peer"
   }
 }
