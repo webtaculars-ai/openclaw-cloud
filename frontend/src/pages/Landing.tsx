@@ -13,7 +13,7 @@ const Landing: React.FC = () => {
         alignItems: 'center',
       }}>
         <div style={{ color: '#4fc3f7', fontSize: '1.5rem', fontWeight: 'bold' }}>
-          OpenClaw Cloud
+          OpenPaw Cloud
         </div>
         <Link
           to="/dashboard"
@@ -41,7 +41,7 @@ const Landing: React.FC = () => {
           Your AI Agent, Running in Minutes
         </h1>
         <p style={{ fontSize: '1.25rem', marginBottom: '2rem', opacity: 0.9 }}>
-          Deploy your own OpenClaw agent to AWS with zero infrastructure hassle.
+          Deploy your own OpenPaw agent to AWS with zero infrastructure hassle.
         </p>
         <Link
           to="/dashboard"
@@ -143,7 +143,7 @@ const Landing: React.FC = () => {
         padding: '2rem',
         textAlign: 'center',
       }}>
-        <p>© 2025 OpenClaw Cloud. Powered by AWS + Bedrock.</p>
+        <p>© 2025 OpenPaw Cloud. Powered by AWS + Bedrock.</p>
       </footer>
     </div>
   );

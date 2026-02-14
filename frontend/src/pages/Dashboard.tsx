@@ -185,7 +185,7 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
           backgroundColor: '#fff',
           textAlign: 'center',
         }}>
-          <h2>Welcome to OpenClaw Cloud!</h2>
+          <h2>Welcome to OpenPaw Cloud!</h2>
           {hasCredits ? (
             <>
               <p style={{ color: '#666', marginBottom: '1.5rem' }}>

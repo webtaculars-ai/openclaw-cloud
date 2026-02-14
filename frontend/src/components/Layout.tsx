@@ -22,7 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ children, userEmail, onSignOut }) => {
         alignItems: 'center',
       }}>
         <Link to="/dashboard" style={{ color: '#4fc3f7', fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'none' }}>
-          OpenClaw Cloud
+          OpenPaw Cloud
         </Link>
         
         {userEmail && (
