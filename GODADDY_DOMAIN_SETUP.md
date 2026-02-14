@@ -1,328 +1,237 @@
-# 🌐 Connect openpaw.co to AWS Amplify
+# GoDaddy Domain Setup for OpenPaw (openpaw.co)
 
-## Overview
-Connect your GoDaddy domain `openpaw.co` to AWS Amplify app `d2spow5okg20j4`
+## Prerequisites
 
----
+✅ Frontend deployed (Amplify, Vercel, or CloudFront)  
+✅ Domain registered: openpaw.co on GoDaddy  
 
-## Step 1: Add Custom Domain in AWS Amplify (5 minutes)
+## Setup Steps
 
-### Via AWS Console:
+### Step 1: Get Your Frontend URL
 
-1. Go to: https://ap-south-1.console.aws.amazon.com/amplify/home?region=ap-south-1#/d2spow5okg20j4
-2. Click **"Domain management"** in the left sidebar
-3. Click **"Add domain"**
-4. Enter domain: `openpaw.co`
-5. Click **"Configure domain"**
-6. Amplify will show you DNS records to add
+**If using Amplify:**
+- Default: `https://master.d2spow5okg20j4.amplifyapp.com`
+- CloudFront domain for custom domain: Will be provided by Amplify
 
-### Via AWS CLI:
+**If using Vercel:**
+- Domain: `https://openpaw.vercel.app`
+- Or use Vercel's custom domain feature
 
-```bash
-aws amplify create-domain-association \
-  --app-id d2spow5okg20j4 \
-  --region ap-south-1 \
-  --domain-name openpaw.co \
-  --sub-domain-settings prefix=www,branchName=master \
-  --sub-domain-settings prefix="",branchName=master
-```
-
-Amplify will generate SSL certificate and provide DNS records.
+**If using CloudFront:**
+- Domain: `https://dXXXXXXXXXX.cloudfront.net`
 
 ---
 
-## Step 2: Get DNS Records from Amplify
+### Step 2: Request SSL Certificate (For Amplify/CloudFront)
 
-After adding the domain, Amplify will provide records like:
+**Amplify Custom Domain (Automated):**
 
-**For CNAME verification:**
-```
-Type: CNAME
-Name: _abc123def456
-Value: _xyz789.acm-validations.aws.
-```
+1. Go to Amplify Console:  
+   https://ap-south-1.console.aws.amazon.com/amplify/home?region=ap-south-1#/d2spow5okg20j4
 
-**For the domain:**
-```
-Type: CNAME
-Name: openpaw.co (or @)
-Value: d2spow5okg20j4.amplifyapp.com
-```
+2. Click "Domain management" → "Add domain"
 
-**For www subdomain:**
-```
-Type: CNAME
-Name: www
-Value: d2spow5okg20j4.amplifyapp.com
-```
+3. Enter: `openpaw.co`
 
----
+4. Amplify will automatically:
+   - Request ACM certificate
+   - Provide DNS records to add
+   - Verify domain ownership
+   - Enable HTTPS
 
-## Step 3: Configure DNS in GoDaddy (10 minutes)
+5. Amplify will show records like:
+   ```
+   Type: CNAME
+   Name: _xxxxxxxxxxxxx.openpaw.co
+   Value: _yyyyyyyyyyy.acm-validations.aws
+   ```
 
-### Manual Method:
+6. Add this CNAME record in GoDaddy (see Step 3)
 
-1. Go to: https://dcc.godaddy.com/
-2. Login with your GoDaddy credentials
-3. Find domain: **openpaw.co**
-4. Click **"DNS"** or **"Manage DNS"**
-5. Add the CNAME records from Amplify:
+7. Wait for verification (~5-10 minutes)
 
-   **Record 1: SSL Verification**
-   - Type: `CNAME`
-   - Name: `_abc123def456` (from Amplify)
-   - Value: `_xyz789.acm-validations.aws.` (from Amplify)
-   - TTL: `600` seconds
-
-   **Record 2: Root Domain**
-   - Type: `CNAME`
-   - Name: `@`
-   - Value: `d2spow5okg20j4.amplifyapp.com`
-   - TTL: `600` seconds
-
-   **Record 3: WWW Subdomain**
-   - Type: `CNAME`
-   - Name: `www`
-   - Value: `d2spow5okg20j4.amplifyapp.com`
-   - TTL: `600` seconds
-
-6. Click **"Save"**
-
-### Using Browser Automation (Advanced):
-
-If you have the devops agent skill with browser automation:
-
-```bash
-# Use OpenClaw to automate GoDaddy DNS configuration
-openclaw agents spawn devops --task "
-Log into GoDaddy at https://dcc.godaddy.com/
-Navigate to domain openpaw.co DNS settings
-Add CNAME records for Amplify:
-- _abc123def456 -> _xyz789.acm-validations.aws.
-- @ -> d2spow5okg20j4.amplifyapp.com
-- www -> d2spow5okg20j4.amplifyapp.com
-Save changes
-"
-```
+8. Amplify will provide final DNS records:
+   ```
+   Type: CNAME
+   Name: openpaw.co
+   Value: master.d2spow5okg20j4.amplifyapp.com
+   
+   Type: CNAME
+   Name: www.openpaw.co
+   Value: master.d2spow5okg20j4.amplifyapp.com
+   ```
 
 ---
 
-## Step 4: Wait for SSL Certificate (15-30 minutes)
+### Step 3: Update GoDaddy DNS Records
 
-1. Go back to Amplify console
-2. Check domain status: https://ap-south-1.console.aws.amazon.com/amplify/home?region=ap-south-1#/d2spow5okg20j4/settings/domains
-3. Status will show:
-   - **"Creating"** → Amplify is requesting SSL certificate
-   - **"Pending Verification"** → Waiting for DNS propagation
-   - **"Available"** → ✅ Ready!
+**Manual Steps (GoDaddy Dashboard):**
 
-Monitor with:
-```bash
-aws amplify get-domain-association \
-  --app-id d2spow5okg20j4 \
-  --domain-name openpaw.co \
-  --region ap-south-1 \
-  --query 'domainAssociation.domainStatus'
-```
+1. Go to GoDaddy DNS Management:  
+   https://dcc.godaddy.com/control/portfolio/openpaw.co/settings?tab=dns
 
----
+2. Click "DNS" → "Manage DNS"
 
-## Step 5: Deploy Frontend to Amplify
+3. Delete default records (if any):
+   - Delete default A records
+   - Delete default CNAME www record
 
-Before the domain works, you need to deploy the frontend:
+4. Add verification CNAME (from Step 2):
+   ```
+   Type: CNAME
+   Name: _xxxxxxxxxxxxx
+   Value: _yyyyyyyyyyy.acm-validations.aws
+   TTL: 600 seconds (10 min)
+   ```
 
-```bash
-# Connect GitHub to Amplify
-cd /path/to/openclaw-cloud
+5. Wait for SSL verification (~5-10 minutes)
 
-# Push latest code if needed
-git push
+6. Once verified, add final records:
 
-# In AWS Amplify Console:
-# 1. Go to: https://ap-south-1.console.aws.amazon.com/amplify/home?region=ap-south-1#/d2spow5okg20j4
-# 2. Click "Connect branch"
-# 3. Select GitHub → webtaculars-ai/openclaw-cloud
-# 4. Branch: master
-# 5. Build settings:
-#    - Base directory: frontend
-#    - Build command: npm run build
-#    - Output directory: build
-# 6. Deploy
-```
+   **Root domain (openpaw.co):**
+   ```
+   Type: CNAME
+   Name: @
+   Value: master.d2spow5okg20j4.amplifyapp.com
+   TTL: 600 seconds
+   ```
 
-Or use Amplify CLI:
-```bash
-npm install -g @aws-amplify/cli
+   **WWW subdomain (www.openpaw.co):**
+   ```
+   Type: CNAME
+   Name: www
+   Value: master.d2spow5okg20j4.amplifyapp.com
+   TTL: 600 seconds
+   ```
 
-amplify init \
-  --appId d2spow5okg20j4 \
-  --region ap-south-1
-
-amplify publish
-```
+7. Save changes
 
 ---
 
-## Step 6: Verify Everything Works
+### Step 4: Verify Domain
 
-### Check DNS Propagation:
+**Wait for DNS propagation** (5-30 minutes):
+
 ```bash
-# Check if DNS is propagated
-dig openpaw.co CNAME
-dig www.openpaw.co CNAME
+# Check if DNS is updated
+dig openpaw.co
+dig www.openpaw.co
 
-# Or use online tool
-# https://dnschecker.org/#CNAME/openpaw.co
+# Expected output should show Amplify CloudFront domain
 ```
 
-### Test the Site:
+**Test in browser:**
+1. Go to `https://openpaw.co`
+2. Should redirect to HTTPS automatically
+3. Should show OpenPaw frontend
+
+---
+
+## Alternative: Browser Automation for GoDaddy
+
+If you want to automate the DNS record updates, I can use browser automation:
+
 ```bash
-# Test HTTP (should redirect to HTTPS)
-curl -I http://openpaw.co
-
-# Test HTTPS
-curl -I https://openpaw.co
-
-# Should return 200 OK
+# Use OpenClaw devops agent with browser automation
+# to log into GoDaddy and update DNS records automatically
 ```
 
-### Browser Test:
-1. Go to: https://openpaw.co
-2. Should show your OpenClaw Cloud frontend
-3. SSL certificate should be valid (green lock)
-4. www.openpaw.co should also work
+**Would you like me to:**
+1. Use browser to log into GoDaddy?
+2. Automatically add DNS records?
+3. Verify the updates?
 
 ---
 
 ## Troubleshooting
 
-### "DNS not propagating"
-- Wait up to 48 hours (usually 15-30 minutes)
-- Check: https://dnschecker.org/#CNAME/openpaw.co
-- GoDaddy TTL is 600 seconds (10 minutes minimum)
+### Issue: "Domain not found"
+- **Solution:** Check DNS propagation with `dig openpaw.co`
+- **Wait:** DNS can take up to 48 hours (usually 5-30 min)
 
-### "SSL certificate not issued"
-- Verify CNAME verification record is correct
-- Check Amplify console for errors
-- May need to delete and re-add domain
+### Issue: "Certificate not verified"
+- **Solution:** Verify CNAME record was added correctly in GoDaddy
+- **Check:** Amplify console should show "Certificate status: Issued"
 
-### "Site not loading"
-- Ensure frontend is deployed to Amplify
-- Check Amplify build logs
-- Verify environment variables are set
+### Issue: "Redirect loop"
+- **Solution:** Make sure you're using CNAME, not A record
+- **Check:** GoDaddy "Forwarding" should be disabled
 
-### "CNAME not allowed for root domain"
-**GoDaddy Issue:** Root domain (@) cannot be CNAME
-
-**Solution - Use ALIAS/ANAME:**
-- GoDaddy doesn't support ALIAS records
-- Options:
-  1. Use A record with Amplify IP (changes occasionally)
-  2. Use subdomain only (www.openpaw.co)
-  3. Use Cloudflare DNS (supports CNAME flattening)
-
-**Recommended:** Switch to Cloudflare DNS:
-1. Add site to Cloudflare (free)
-2. Update GoDaddy nameservers to Cloudflare
-3. Add CNAME records in Cloudflare
-4. Cloudflare automatically flattens CNAMEs for root domain
+### Issue: "Mixed content warning"
+- **Solution:** Make sure API URL uses HTTPS: `https://q8aw4txdoa.execute-api.ap-south-1.amazonaws.com/prod/`
+- **Check:** Frontend env vars in Amplify
 
 ---
 
-## Alternative: Use Route 53 (Better Solution)
+## DNS Record Summary (Final State)
 
-AWS Route 53 supports ALIAS records for root domains:
+| Type | Name | Value | TTL |
+|------|------|-------|-----|
+| CNAME | @ | master.d2spow5okg20j4.amplifyapp.com | 600 |
+| CNAME | www | master.d2spow5okg20j4.amplifyapp.com | 600 |
 
-```bash
-# 1. Create hosted zone
-aws route53 create-hosted-zone \
-  --name openpaw.co \
-  --caller-reference $(date +%s)
-
-# 2. Get nameservers
-aws route53 get-hosted-zone \
-  --id YOUR_ZONE_ID \
-  --query 'DelegationSet.NameServers'
-
-# 3. Update GoDaddy nameservers to Route 53 nameservers
-
-# 4. Create ALIAS record pointing to Amplify
-aws route53 change-resource-record-sets \
-  --hosted-zone-id YOUR_ZONE_ID \
-  --change-batch file://alias-record.json
-```
-
-**alias-record.json:**
-```json
-{
-  "Changes": [{
-    "Action": "CREATE",
-    "ResourceRecordSet": {
-      "Name": "openpaw.co",
-      "Type": "A",
-      "AliasTarget": {
-        "HostedZoneId": "Z2FDTNDATAQYW2",
-        "DNSName": "d2spow5okg20j4.amplifyapp.com",
-        "EvaluateTargetHealth": false
-      }
-    }
-  }]
-}
-```
-
----
-
-## Quick Start Commands
-
-```bash
-# 1. Add domain to Amplify
-aws amplify create-domain-association \
-  --app-id d2spow5okg20j4 \
-  --region ap-south-1 \
-  --domain-name openpaw.co \
-  --sub-domain-settings prefix=www,branchName=master \
-  --sub-domain-settings prefix="",branchName=master
-
-# 2. Get DNS records to add to GoDaddy
-aws amplify get-domain-association \
-  --app-id d2spow5okg20j4 \
-  --domain-name openpaw.co \
-  --region ap-south-1
-
-# 3. Check status
-watch -n 30 'aws amplify get-domain-association \
-  --app-id d2spow5okg20j4 \
-  --domain-name openpaw.co \
-  --region ap-south-1 \
-  --query "domainAssociation.domainStatus"'
-```
+**Optional (after verification is complete):**
+- Delete: `_xxxxxxxxxxxxx` CNAME (ACM validation record)
 
 ---
 
 ## Expected Timeline
 
-| Step | Time |
-|------|------|
-| Add domain to Amplify | 2 min |
-| Configure GoDaddy DNS | 10 min |
-| DNS propagation | 15-30 min |
-| SSL certificate issued | 10-20 min |
-| **Total** | **~45 minutes** |
+| Step | Time | Status |
+|------|------|--------|
+| Frontend deployment | 5 min | 🟡 Pending |
+| Add custom domain in Amplify | 1 min | 🟡 Pending |
+| Add verification CNAME | 2 min | 🟡 Pending |
+| SSL verification | 5-10 min | 🟡 Pending |
+| Add final DNS records | 2 min | 🟡 Pending |
+| DNS propagation | 5-30 min | 🟡 Pending |
+| **Total** | **20-50 min** | 🟡 Pending |
 
 ---
 
-## Summary
+## After Domain is Live
 
-**Your setup:**
-- Domain: `openpaw.co` (GoDaddy)
-- Amplify App: `d2spow5okg20j4`
-- Target: `https://openpaw.co` → OpenClaw Cloud frontend
+✅ https://openpaw.co → Your frontend  
+✅ https://www.openpaw.co → Your frontend  
+✅ HTTPS enabled automatically  
+✅ SSL certificate auto-renewed by AWS  
 
-**Status:**
-- [ ] Domain added to Amplify
-- [ ] DNS records configured in GoDaddy
-- [ ] SSL certificate issued
-- [ ] Frontend deployed
-- [ ] Domain accessible
+---
 
-**Next:** Follow Step 1 to add the domain in Amplify Console!
+## Quick Start Commands
+
+**Check DNS:**
+```bash
+dig openpaw.co
+nslookup openpaw.co
+```
+
+**Check SSL:**
+```bash
+curl -I https://openpaw.co
+```
+
+**Test frontend:**
+```bash
+open https://openpaw.co
+```
+
+---
+
+## Notes
+
+- GoDaddy's default "@" record should point to Amplify CloudFront distribution
+- WWW is optional but recommended for better UX
+- SSL certificate is free and auto-renewed by AWS
+- DNS changes can take 5-30 minutes (sometimes up to 48 hours)
+
+---
+
+**Ready to proceed?** Let's:
+1. ✅ Deploy frontend to Amplify (Option 1)
+2. ✅ Add custom domain in Amplify console
+3. ✅ Update GoDaddy DNS records
+4. ✅ Wait for propagation
+5. ✅ Test https://openpaw.co
+
+**Time estimate:** 45 minutes total
