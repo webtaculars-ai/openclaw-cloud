@@ -77,8 +77,8 @@ export class ApiStack extends cdk.Stack {
       LEMONSQUEEZY_WEBHOOK_SECRET: 'webhook_placeholder', // Replace with actual secret
       LEMONSQUEEZY_STORE_ID: 'store_placeholder', // Replace with your store ID
       LEMONSQUEEZY_VARIANT_STARTER: 'variant_placeholder', // Replace with variant ID
+      LEMONSQUEEZY_VARIANT_BUILDER: 'variant_placeholder', // Replace with variant ID
       LEMONSQUEEZY_VARIANT_PRO: 'variant_placeholder', // Replace with variant ID
-      LEMONSQUEEZY_VARIANT_ENTERPRISE: 'variant_placeholder', // Replace with variant ID
       FRONTEND_URL: 'https://placeholder.amplifyapp.com', // Replace after Amplify deploy
     };
 

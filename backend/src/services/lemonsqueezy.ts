@@ -10,11 +10,11 @@ const FRONTEND_URL = process.env.FRONTEND_URL!;
 const WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET!;
 const STORE_ID = process.env.LEMONSQUEEZY_STORE_ID!;
 
-// Credit tier to variant ID mapping (you'll set these in env vars)
+// Credit tier to variant ID mapping (set these in env vars after creating LemonSqueezy products)
 const VARIANT_IDS: Record<string, string> = {
   starter: process.env.LEMONSQUEEZY_VARIANT_STARTER || '',
+  builder: process.env.LEMONSQUEEZY_VARIANT_BUILDER || '',
   pro: process.env.LEMONSQUEEZY_VARIANT_PRO || '',
-  enterprise: process.env.LEMONSQUEEZY_VARIANT_ENTERPRISE || '',
 };
 
 export async function createCheckoutSession(
