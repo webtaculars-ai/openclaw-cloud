@@ -1,23 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { AlertCircle, CheckCircle, XCircle, Plus, Zap, CreditCard } from 'lucide-react';
 import Layout from '../components/Layout';
 import AgentStatusCard from '../components/AgentStatusCard';
 import CreditMeter from '../components/CreditMeter';
+import { Button, Card } from '../components/ui';
 import * as api from '../services/api';
 
 const DemoBanner: React.FC = () => (
-  <div style={{
-    padding: '1rem',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '4px',
-    color: '#856404',
-    marginBottom: '1.5rem',
-    textAlign: 'center',
-  }}>
-    ℹ️ <strong>Demo Mode:</strong> This is a preview with mock data. Deploy the backend to enable real functionality.
+  <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start space-x-3 animate-slide-down">
+    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+    <div>
+      <p className="text-yellow-800 font-medium">Demo Mode</p>
+      <p className="text-yellow-700 text-sm">
+        This is a preview with mock data. Deploy the backend to enable real functionality.
+      </p>
+    </div>
   </div>
 );
+
+interface AlertProps {
+  type: 'success' | 'error';
+  message: string;
+  onClose: () => void;
+}
+
+const Alert: React.FC<AlertProps> = ({ type, message, onClose }) => {
+  const styles = type === 'success' 
+    ? 'bg-green-50 border-green-200 text-green-800'
+    : 'bg-red-50 border-red-200 text-red-800';
+  
+  const Icon = type === 'success' ? CheckCircle : XCircle;
+  const iconColor = type === 'success' ? 'text-green-600' : 'text-red-600';
+
+  return (
+    <div className={`mb-6 p-4 border rounded-lg flex items-start justify-between ${styles} animate-slide-down`}>
+      <div className="flex items-start space-x-3">
+        <Icon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
+        <span className="font-medium">{message}</span>
+      </div>
+      <button
+        onClick={onClose}
+        className="text-gray-500 hover:text-gray-700 transition-colors"
+        aria-label="Close"
+      >
+        <XCircle className="w-5 h-5" />
+      </button>
+    </div>
+  );
+};
 
 interface Props {
   user: any;
@@ -94,7 +125,12 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
   if (loading) {
     return (
       <Layout userEmail={user?.signInDetails?.loginId} onSignOut={signOut}>
-        <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 border-t-primary-500 mb-4"></div>
+            <p className="text-gray-600">Loading your dashboard...</p>
+          </div>
+        </div>
       </Layout>
     );
   }
@@ -108,126 +144,86 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
       {api.isMockMode() && <DemoBanner />}
       
       {successMessage && (
-        <div style={{
-          padding: '1rem',
-          backgroundColor: '#d4edda',
-          border: '1px solid #c3e6cb',
-          borderRadius: '4px',
-          color: '#155724',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <span>✅ {successMessage}</span>
-          <button
-            onClick={() => setSuccessMessage(null)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '1.2rem',
-            }}
-          >
-            ×
-          </button>
-        </div>
+        <Alert
+          type="success"
+          message={successMessage}
+          onClose={() => setSuccessMessage(null)}
+        />
       )}
 
       {error && (
-        <div style={{
-          padding: '1rem',
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
-          borderRadius: '4px',
-          color: '#721c24',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <span>❌ {error}</span>
-          <button
-            onClick={() => setError(null)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '1.2rem',
-            }}
-          >
-            ×
-          </button>
-        </div>
+        <Alert
+          type="error"
+          message={error}
+          onClose={() => setError(null)}
+        />
       )}
 
-      <h1>Dashboard</h1>
+      <div className="mb-8 animate-fade-in">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
+        <p className="text-gray-600">Manage your OpenPaw agent and monitor usage</p>
+      </div>
 
       {credits && (
-        <CreditMeter
-          balanceCents={credits.balance}
-          totalUsedCents={credits.totalUsed}
-        />
+        <div className="mb-8 animate-slide-up">
+          <CreditMeter
+            balanceCents={credits.balance}
+            totalUsedCents={credits.totalUsed}
+          />
+        </div>
       )}
 
       {hasAgent ? (
-        <AgentStatusCard
-          agent={agent}
-          onStart={() => handleStart(agent.agentId)}
-          onStop={() => handleStop(agent.agentId)}
-          loading={actionLoading}
-        />
-      ) : (
-        <div style={{
-          border: '1px solid #ddd',
-          borderRadius: '8px',
-          padding: '2rem',
-          backgroundColor: '#fff',
-          textAlign: 'center',
-        }}>
-          <h2>Welcome to OpenPaw Cloud!</h2>
-          {hasCredits ? (
-            <>
-              <p style={{ color: '#666', marginBottom: '1.5rem' }}>
-                You're all set! Let's create your agent.
-              </p>
-              <Link
-                to="/setup"
-                style={{
-                  display: 'inline-block',
-                  backgroundColor: '#4fc3f7',
-                  color: '#fff',
-                  padding: '1rem 2rem',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold',
-                }}
-              >
-                Set Up Agent
-              </Link>
-            </>
-          ) : (
-            <>
-              <p style={{ color: '#666', marginBottom: '1.5rem' }}>
-                To get started, you'll need to purchase credits.
-              </p>
-              <Link
-                to="/billing"
-                style={{
-                  display: 'inline-block',
-                  backgroundColor: '#4caf50',
-                  color: '#fff',
-                  padding: '1rem 2rem',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold',
-                }}
-              >
-                Purchase Credits
-              </Link>
-            </>
-          )}
+        <div className="animate-slide-up" style={{ animationDelay: '100ms' }}>
+          <AgentStatusCard
+            agent={agent}
+            onStart={() => handleStart(agent.agentId)}
+            onStop={() => handleStop(agent.agentId)}
+            loading={actionLoading}
+          />
         </div>
+      ) : (
+        <Card className="text-center py-12 animate-scale-in">
+          <div className="max-w-md mx-auto">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary-100 to-secondary-100 mb-6">
+              <Zap className="w-10 h-10 text-primary-600" />
+            </div>
+            
+            <h2 className="text-2xl font-bold mb-3">Welcome to OpenPaw Cloud!</h2>
+            
+            {hasCredits ? (
+              <>
+                <p className="text-gray-600 mb-6">
+                  You're all set with credits! Let's create your AI agent.
+                </p>
+                <Link to="/setup">
+                  <Button 
+                    variant="primary" 
+                    size="lg"
+                    icon={<Plus className="w-5 h-5" />}
+                  >
+                    Set Up Agent
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 mb-6">
+                  To get started, you'll need to purchase credits first.
+                </p>
+                <Link to="/billing">
+                  <Button 
+                    variant="success" 
+                    size="lg"
+                    icon={<CreditCard className="w-5 h-5" />}
+                  >
+                    Purchase Credits
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </Card>
       )}
     </Layout>
   );
