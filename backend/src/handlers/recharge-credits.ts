@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import * as stripe from '../services/stripe';
+import * as lemonsqueezy from '../services/lemonsqueezy';
 import { RECHARGE_TIERS } from '../types';
 
 function response(statusCode: number, body: any): APIGatewayProxyResult {
@@ -30,8 +30,8 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     const tierConfig = RECHARGE_TIERS[tier as keyof typeof RECHARGE_TIERS];
 
-    // Create Stripe Checkout session
-    const url = await stripe.createCheckoutSession(
+    // Create Lemon Squeezy checkout URL
+    const url = await lemonsqueezy.createCheckoutSession(
       userId,
       tierConfig.amountCents,
       tier

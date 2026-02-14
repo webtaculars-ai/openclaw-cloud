@@ -73,8 +73,12 @@ export class ApiStack extends cdk.Stack {
       TASK_DEFINITION: props.taskDefinition.taskDefinitionArn,
       VPC_SUBNETS: props.vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }).subnetIds.join(','),
       SECURITY_GROUP: props.securityGroup.securityGroupId,
-      STRIPE_SECRET_KEY: 'sk_test_placeholder', // Replace with actual secret
-      STRIPE_WEBHOOK_SECRET: 'whsec_placeholder', // Replace with actual secret
+      LEMONSQUEEZY_API_KEY: 'ls_placeholder', // Replace with actual key
+      LEMONSQUEEZY_WEBHOOK_SECRET: 'webhook_placeholder', // Replace with actual secret
+      LEMONSQUEEZY_STORE_ID: 'store_placeholder', // Replace with your store ID
+      LEMONSQUEEZY_VARIANT_STARTER: 'variant_placeholder', // Replace with variant ID
+      LEMONSQUEEZY_VARIANT_PRO: 'variant_placeholder', // Replace with variant ID
+      LEMONSQUEEZY_VARIANT_ENTERPRISE: 'variant_placeholder', // Replace with variant ID
       FRONTEND_URL: 'https://placeholder.amplifyapp.com', // Replace after Amplify deploy
     };
 
@@ -149,9 +153,9 @@ export class ApiStack extends cdk.Stack {
       memorySize: 256,
     });
 
-    const stripeWebhookFn = new lambda.Function(this, 'StripeWebhookFn', {
+    const lemonSqueezyWebhookFn = new lambda.Function(this, 'LemonSqueezyWebhookFn', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'stripe-webhook.handler',
+      handler: 'lemonsqueezy-webhook.handler',
       code: lambda.Code.fromAsset('../backend/dist'),
       role: lambdaRole,
       environment: sharedEnv,
@@ -222,8 +226,8 @@ export class ApiStack extends cdk.Stack {
     });
 
     const webhooks = this.api.root.addResource('webhooks');
-    const stripe = webhooks.addResource('stripe');
-    stripe.addMethod('POST', new apigateway.LambdaIntegration(stripeWebhookFn)); // No auth
+    const lemonsqueezy = webhooks.addResource('lemonsqueezy');
+    lemonsqueezy.addMethod('POST', new apigateway.LambdaIntegration(lemonSqueezyWebhookFn)); // No auth
 
     this.apiUrl = this.api.url;
 
