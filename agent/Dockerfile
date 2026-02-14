@@ -19,7 +19,7 @@ FROM node:22-slim
 
 # Install curl (for health checks) and gettext-base (for envsubst)
 RUN apt-get update && \
-    apt-get install -y curl gettext-base && \
+    apt-get install -y curl git gettext-base && \
     rm -rf /var/lib/apt/lists/*
 
 # Install OpenClaw from npm (requires Node >= 22)
