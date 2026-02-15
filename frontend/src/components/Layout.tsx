@@ -29,7 +29,7 @@ const Layout: React.FC<LayoutProps> = ({ children, userEmail, onSignOut }) => {
               className="flex items-center space-x-2 text-primary-500 hover:text-primary-400 transition-colors"
             >
               <Sparkles className="w-8 h-8" />
-              <span className="text-2xl font-bold">OpenPaw Cloud</span>
+              <span className="text-2xl font-bold">OpenPaw</span>
             </Link>
             
             {userEmail && (

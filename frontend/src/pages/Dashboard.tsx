@@ -160,8 +160,8 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
       )}
 
       <div className="mb-8 animate-fade-in">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
-        <p className="text-gray-600">Manage your OpenPaw agent and monitor usage</p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Your Dashboard</h1>
+        <p className="text-gray-600">Manage your AI companion and track your conversations</p>
       </div>
 
       {credits && (
@@ -189,12 +189,12 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
               <Zap className="w-10 h-10 text-primary-600" />
             </div>
             
-            <h2 className="text-2xl font-bold mb-3">Welcome to OpenPaw Cloud!</h2>
+            <h2 className="text-2xl font-bold mb-3">Welcome to OpenPaw! 🐾</h2>
             
             {hasCredits ? (
               <>
                 <p className="text-gray-600 mb-6">
-                  You're all set with credits! Let's create your AI agent.
+                  You're all set with credits! Let's bring your AI companion to life.
                 </p>
                 <Link to="/setup">
                   <Button 
@@ -209,7 +209,7 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
             ) : (
               <>
                 <p className="text-gray-600 mb-6">
-                  To get started, you'll need to purchase credits first.
+                  To get started, grab some credits and your AI companion will be ready in minutes!
                 </p>
                 <Link to="/billing">
                   <Button 
