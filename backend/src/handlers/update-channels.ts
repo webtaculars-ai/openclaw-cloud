@@ -5,7 +5,7 @@ import * as ecs from '../services/ecs';
 function response(statusCode: number, body: any): APIGatewayProxyResult {
   return {
     statusCode,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
     body: JSON.stringify(body),
   };
 }

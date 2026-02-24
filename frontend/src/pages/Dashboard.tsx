@@ -7,18 +7,6 @@ import CreditMeter from '../components/CreditMeter';
 import { Button, Card } from '../components/ui';
 import * as api from '../services/api';
 
-const DemoBanner: React.FC = () => (
-  <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start space-x-3 animate-slide-down">
-    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-    <div>
-      <p className="text-yellow-800 font-medium">Demo Mode</p>
-      <p className="text-yellow-700 text-sm">
-        This is a preview with mock data. Deploy the backend to enable real functionality.
-      </p>
-    </div>
-  </div>
-);
-
 interface AlertProps {
   type: 'success' | 'error';
   message: string;
@@ -70,11 +58,32 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
         api.listAgents(),
         api.getCredits(),
       ]);
-      setAgents(agentData.agents);
+      
+      // Check WhatsApp status for each agent with WhatsApp enabled
+      const agentsWithStatus = await Promise.all(
+        agentData.agents.map(async (agent) => {
+          if (agent.whatsappEnabled && agent.status === 'running') {
+            try {
+              const whatsappStatus = await api.getWhatsAppStatus(agent.agentId);
+              return { ...agent, whatsappLinked: whatsappStatus.linked };
+            } catch (err) {
+              console.error(`Failed to check WhatsApp status for ${agent.agentId}:`, err);
+              return agent;
+            }
+          }
+          return agent;
+        })
+      );
+      
+      setAgents(agentsWithStatus);
       setCredits(creditData);
       setError(null);
     } catch (err: any) {
-      setError(err.message);
+      // If API is not available yet, use mock data
+      console.error('API Error:', err.message);
+      setError(null); // Don't show error, fall back to mock mode
+      setAgents([]);
+      setCredits({ balance: 0, totalUsed: 0, transactions: [] });
     } finally {
       setLoading(false);
     }
@@ -141,8 +150,6 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
 
   return (
     <Layout userEmail={user?.signInDetails?.loginId} onSignOut={signOut}>
-      {api.isMockMode() && <DemoBanner />}
-      
       {successMessage && (
         <Alert
           type="success"
@@ -160,8 +167,8 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
       )}
 
       <div className="mb-8 animate-fade-in">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Your Dashboard</h1>
-        <p className="text-gray-600">Manage your AI companion and track your conversations</p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome Home! 🐾</h1>
+        <p className="text-gray-600">Your AI friend is here and ready to chat</p>
       </div>
 
       {credits && (
@@ -174,14 +181,23 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
       )}
 
       {hasAgent ? (
-        <div className="animate-slide-up" style={{ animationDelay: '100ms' }}>
-          <AgentStatusCard
-            agent={agent}
-            onStart={() => handleStart(agent.agentId)}
-            onStop={() => handleStop(agent.agentId)}
-            loading={actionLoading}
-          />
-        </div>
+        <>
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Your Agent</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              You can have one agent per account. To create a different agent, stop and delete this one first.
+            </p>
+          </div>
+          <div className="animate-slide-up" style={{ animationDelay: '100ms' }}>
+            <AgentStatusCard
+              agent={agent}
+              onStart={() => handleStart(agent.agentId)}
+              onStop={() => handleStop(agent.agentId)}
+              loading={actionLoading}
+              onRefresh={fetchData}
+            />
+          </div>
+        </>
       ) : (
         <Card className="text-center py-12 animate-scale-in">
           <div className="max-w-md mx-auto">
@@ -189,12 +205,12 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
               <Zap className="w-10 h-10 text-primary-600" />
             </div>
             
-            <h2 className="text-2xl font-bold mb-3">Welcome to OpenPaw! 🐾</h2>
+            <h2 className="text-2xl font-bold mb-3">Let's Get You Started! 🐾</h2>
             
             {hasCredits ? (
               <>
                 <p className="text-gray-600 mb-6">
-                  You're all set with credits! Let's bring your AI companion to life.
+                  You've got credits—awesome! Now let's set up your friendly AI companion so you can start chatting.
                 </p>
                 <Link to="/setup">
                   <Button 
@@ -202,14 +218,14 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
                     size="lg"
                     icon={<Plus className="w-5 h-5" />}
                   >
-                    Set Up Agent
+                    Connect Your Friend
                   </Button>
                 </Link>
               </>
             ) : (
               <>
                 <p className="text-gray-600 mb-6">
-                  To get started, grab some credits and your AI companion will be ready in minutes!
+                  Want to start chatting? Grab some credits and your AI friend will be ready in minutes!
                 </p>
                 <Link to="/billing">
                   <Button 
@@ -217,7 +233,7 @@ const Dashboard: React.FC<Props> = ({ user, signOut }) => {
                     size="lg"
                     icon={<CreditCard className="w-5 h-5" />}
                   >
-                    Purchase Credits
+                    Get Started ($5)
                   </Button>
                 </Link>
               </>

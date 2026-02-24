@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sparkles, LayoutDashboard, CreditCard, LogOut } from 'lucide-react';
+import { Sparkles, LayoutDashboard, CreditCard, LogOut, Calendar } from 'lucide-react';
 import { Button } from './ui';
 
 interface LayoutProps {
@@ -16,6 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children, userEmail, onSignOut }) => {
 
   const navLinks = [
     { path: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
+    { path: '/cron', label: 'Scheduled Tasks', icon: <Calendar className="w-4 h-4" /> },
     { path: '/billing', label: 'Billing', icon: <CreditCard className="w-4 h-4" /> },
   ];
 

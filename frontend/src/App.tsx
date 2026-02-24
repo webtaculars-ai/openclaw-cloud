@@ -8,6 +8,9 @@ import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import AgentSetup from './pages/AgentSetup';
 import Billing from './pages/Billing';
+import CronJobs from './pages/CronJobs';
+import Terms from './pages/Terms';
+import RefundPolicy from './pages/RefundPolicy';
 
 // Configure Amplify
 Amplify.configure({
@@ -27,7 +30,27 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <Authenticator>
+            <Authenticator
+              loginMechanisms={['email']}
+              formFields={{
+                signUp: {
+                  email: {
+                    label: 'Email',
+                    placeholder: 'Enter your email',
+                    order: 1
+                  },
+                  password: {
+                    label: 'Password',
+                    placeholder: 'Enter your password',
+                    order: 2
+                  },
+                  confirm_password: {
+                    label: 'Confirm Password',
+                    order: 3
+                  }
+                }
+              }}
+            >
               {({ signOut, user }) => <Dashboard user={user} signOut={signOut} />}
             </Authenticator>
           }
@@ -35,7 +58,9 @@ function App() {
         <Route
           path="/setup"
           element={
-            <Authenticator>
+            <Authenticator
+              loginMechanisms={['email']}
+            >
               {({ signOut, user }) => <AgentSetup user={user} signOut={signOut} />}
             </Authenticator>
           }
@@ -43,11 +68,25 @@ function App() {
         <Route
           path="/billing"
           element={
-            <Authenticator>
+            <Authenticator
+              loginMechanisms={['email']}
+            >
               {({ signOut, user }) => <Billing user={user} signOut={signOut} />}
             </Authenticator>
           }
         />
+        <Route
+          path="/cron"
+          element={
+            <Authenticator
+              loginMechanisms={['email']}
+            >
+              {({ signOut, user }) => <CronJobs user={user} signOut={signOut} />}
+            </Authenticator>
+          }
+        />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>

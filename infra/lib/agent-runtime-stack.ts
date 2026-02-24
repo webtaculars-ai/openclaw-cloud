@@ -92,10 +92,10 @@ export class AgentRuntimeStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
-    // Fargate Task Definition
+    // Fargate Task Definition - Increased resources for browser automation
     this.taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDefinition', {
-      memoryLimitMiB: 512,
-      cpu: 256,
+      memoryLimitMiB: 2048, // Increased from 512 for browser
+      cpu: 1024, // Increased from 256 for browser (1 vCPU)
       executionRole: this.taskExecutionRole,
       taskRole: this.taskRole,
     });

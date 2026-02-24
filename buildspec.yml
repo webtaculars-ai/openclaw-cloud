@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 851725418250.dkr.ecr.ap-south-1.amazonaws.com
+      - IMAGE_TAG=browser-$(date +%s)
+      - echo Building version $IMAGE_TAG
+  build:
+    commands:
+      - echo Build started on $(date)
+      - echo Building the Docker image...
+      - cd docker
+      - docker build -t openpaw-agent:$IMAGE_TAG .
+      - docker tag openpaw-agent:$IMAGE_TAG 851725418250.dkr.ecr.ap-south-1.amazonaws.com/openpaw-agent:$IMAGE_TAG
+      - docker tag openpaw-agent:$IMAGE_TAG 851725418250.dkr.ecr.ap-south-1.amazonaws.com/openpaw-agent:latest
+  post_build:
+    commands:
+      - echo Build completed on $(date)
+      - echo Pushing the Docker images...
+      - docker push 851725418250.dkr.ecr.ap-south-1.amazonaws.com/openpaw-agent:$IMAGE_TAG
+      - docker push 851725418250.dkr.ecr.ap-south-1.amazonaws.com/openpaw-agent:latest
+      - echo Image pushed successfully!
+      - echo Latest image is now openpaw-agent:$IMAGE_TAG

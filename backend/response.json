@@ -1,0 +1,1 @@
+{"statusCode":200,"headers":{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"},"body":"{\"agentId\":\"8fb89955-6c31-49a0-84e3-ddd505cfc0ae\",\"status\":\"running\",\"taskArn\":\"arn:aws:ecs:ap-south-1:851725418250:task/openclaw-cluster/c7fd4954f175459f96cd33a3ce3fb6c8\"}"}
