@@ -45,7 +45,6 @@ CHANNELS_CONFIG=""
 if [ "$TELEGRAM_ENABLED" = "true" ]; then
   CHANNELS_CONFIG="$CHANNELS_CONFIG
     \"telegram\": {
-      \"enabled\": true,
       \"botToken\": \"$TELEGRAM_BOT_TOKEN\",
       \"dmPolicy\": \"open\",
       \"allowFrom\": [\"*\"]
@@ -61,7 +60,6 @@ if [ "$WHATSAPP_ENABLED" = "true" ]; then
   
   CHANNELS_CONFIG="$CHANNELS_CONFIG
     \"whatsapp\": {
-      \"enabled\": true,
       \"dmPolicy\": \"open\",
       \"allowFrom\": [\"*\"],
       \"sendReadReceipts\": true,
