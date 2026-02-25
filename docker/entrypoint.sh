@@ -43,8 +43,7 @@ CHANNELS_CONFIG=""
 
 # Add Telegram if enabled
 if [ "$TELEGRAM_ENABLED" = "true" ]; then
-  CHANNELS_CONFIG="$CHANNELS_CONFIG
-    \"telegram\": {
+  CHANNELS_CONFIG="\"telegram\": {
       \"botToken\": \"$TELEGRAM_BOT_TOKEN\",
       \"dmPolicy\": \"open\",
       \"allowFrom\": [\"*\"]
@@ -55,11 +54,11 @@ fi
 if [ "$WHATSAPP_ENABLED" = "true" ]; then
   # Add comma if Telegram config exists
   if [ -n "$CHANNELS_CONFIG" ]; then
-    CHANNELS_CONFIG="$CHANNELS_CONFIG,"
+    CHANNELS_CONFIG="$CHANNELS_CONFIG,
+    "
   fi
   
-  CHANNELS_CONFIG="$CHANNELS_CONFIG
-    \"whatsapp\": {
+  CHANNELS_CONFIG="${CHANNELS_CONFIG}\"whatsapp\": {
       \"dmPolicy\": \"open\",
       \"allowFrom\": [\"*\"],
       \"sendReadReceipts\": true,
