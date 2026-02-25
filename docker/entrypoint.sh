@@ -76,7 +76,7 @@ if [ -z "$CHANNELS_CONFIG" ]; then
   exit 1
 fi
 
-cat > /root/.openclaw/config.json << EOF
+cat > /root/.openclaw/openclaw.json << EOF
 {
   "gateway": {
     "mode": "local",
@@ -112,5 +112,5 @@ echo "✅ Configuration created"
 
 echo "🎯 Starting OpenClaw gateway..."
 
-export OPENCLAW_CONFIG_PATH=/root/.openclaw/config.json
+export OPENCLAW_CONFIG_PATH=/root/.openclaw/openclaw.json
 exec openclaw gateway run
